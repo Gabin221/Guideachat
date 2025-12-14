@@ -1,0 +1,51 @@
+package com.example.guideachat.data.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+
+// Structure pour le parsing JSON des IA et stockage
+@Serializable
+data class Moteur(
+    val nom: String,
+    val puissances: List<Int>
+)
+
+@Serializable
+data class MoteursCarburant(
+    val essence: List<Moteur> = emptyList(),
+    val diesel: List<Moteur> = emptyList(),
+    val electrique: List<Moteur> = emptyList(),
+    val hybride: List<Moteur> = emptyList(),
+    val flexfuel: List<Moteur> = emptyList(),
+    val gpl: List<Moteur> = emptyList()
+)
+
+@Serializable
+data class BilanFiabilite(
+    val fiabilite_texte: String,
+    val moteurs_conseilles: List<String> = emptyList(),
+    val moteurs_deconseilles: List<String> = emptyList(),
+    val moteurs_osef: List<String> = emptyList()
+)
+
+// L'entité principale stockée dans Room
+@Entity(tableName = "voitures")
+@Serializable
+data class VoitureEntity(
+    @PrimaryKey
+    val id_modele: String, // ex: "peugeot_308" (normalisé)
+    val marque: String,
+    val nom_modele: String,
+    val annees_production: List<Int>,
+    val prix_min: Int,
+    val prix_max: Int,
+    val transmission: List<String>,
+    val photo_url: String?,
+
+    // Stocké en JSON String dans la BDD via TypeConverter
+    val moteurs: MoteursCarburant,
+    val bilan: BilanFiabilite,
+
+    val date_maj: Long = System.currentTimeMillis()
+)

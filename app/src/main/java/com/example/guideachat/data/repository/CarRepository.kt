@@ -67,12 +67,20 @@ class CarRepository(private val carDao: CarDao) {
             // 4. Récupérer l'image
             var photoUrl: String? = null
             try {
+                // AJOUTE CE LOG
+                Log.d("REPO", "Recherche image pour : $marque $modele voiture exterieur")
+
                 val searchRes = NetworkModule.googleSearchApi.searchImage(
                     apiKey = GOOGLE_KEY, cx = GOOGLE_CX, query = "$marque $modele voiture exterieur"
                 )
+
                 photoUrl = searchRes.items?.firstOrNull()?.link
+
+                // AJOUTE CE LOG
+                Log.d("REPO", "URL Image trouvée : $photoUrl")
+
             } catch (e: Exception) {
-                Log.e("REPO", "Erreur image: ${e.message}")
+                Log.e("REPO", "Erreur API Image: ${e.message}")
             }
 
             // 5. Finaliser l'objet et sauvegarder

@@ -34,16 +34,18 @@ data class BilanFiabilite(
 @Serializable
 data class VoitureEntity(
     @PrimaryKey
-    val id_modele: String, // ex: "peugeot_308" (normalisé)
+    val id_modele: String = "", // <--- AJOUTE = "" (valeur par défaut)
+
     val marque: String,
     val nom_modele: String,
-    val annees_production: List<Int>,
+    val annees_production: List<Int?>,
     val prix_min: Int,
     val prix_max: Int,
     val transmission: List<String>,
-    val photo_url: String?,
 
-    // Stocké en JSON String dans la BDD via TypeConverter
+    val photo_url: String? = null, // <--- AJOUTE = null (valeur par défaut)
+
+    // Le reste ne change pas, car Gemini est censé fournir ces infos
     val moteurs: MoteursCarburant,
     val bilan: BilanFiabilite,
 

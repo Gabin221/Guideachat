@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
+import okhttp3.logging.HttpLoggingInterceptor
 
 // --- DTOs pour Gemini ---
 @Serializable data class GeminiRequest(val contents: List<Content>)
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit
 
 // --- Interfaces API ---
 interface GeminiApi {
-    @POST("v1beta/models/gemini-1.5-flash:generateContent")
+    @POST("v1beta/models/gemini-2.5-flash:generateContent")
     suspend fun generateContent(
         @Query("key") apiKey: String,
         @Body request: GeminiRequest
@@ -48,7 +49,14 @@ object NetworkModule {
     private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
     private val contentType = "application/json".toMediaType()
 
+    // 1. Crée l'intercepteur de logs
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY // Affiche tout : URL, Headers et Réponse
+    }
+
+    // 2. Ajoute-le au client OkHttp
     private val client = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor) // <--- C'est ici que ça se passe
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()

@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             }
             is UiState.Error -> {
                 binding.progressBar.visibility = View.GONE
+                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ERROR: ${state.message}")
                 Toast.makeText(this, "Erreur : ${state.message}", Toast.LENGTH_LONG).show()
             }
         }

@@ -35,10 +35,12 @@ interface CarDao {
 class Converters {
     private val json = Json { ignoreUnknownKeys = true }
 
+    // Dans la classe Converters
     @TypeConverter
-    fun fromListInt(list: List<Int>): String = json.encodeToString(list)
+    fun fromListInt(list: List<Int?>): String = json.encodeToString(list) // Change List<Int> par List<Int?>
+
     @TypeConverter
-    fun toListInt(data: String): List<Int> = json.decodeFromString(data)
+    fun toListInt(data: String): List<Int?> = json.decodeFromString(data) // Change List<Int> par List<Int?>
 
     @TypeConverter
     fun fromListString(list: List<String>): String = json.encodeToString(list)

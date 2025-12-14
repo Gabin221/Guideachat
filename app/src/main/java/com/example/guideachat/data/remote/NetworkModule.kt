@@ -13,18 +13,15 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 import okhttp3.logging.HttpLoggingInterceptor
 
-// --- DTOs pour Gemini ---
 @Serializable data class GeminiRequest(val contents: List<Content>)
 @Serializable data class Content(val parts: List<Part>)
 @Serializable data class Part(val text: String)
 @Serializable data class GeminiResponse(val candidates: List<Candidate>?)
 @Serializable data class Candidate(val content: Content?)
 
-// --- DTOs pour Google Search ---
 @Serializable data class SearchResponse(val items: List<SearchItem>?)
 @Serializable data class SearchItem(val link: String)
 
-// --- Interfaces API ---
 interface GeminiApi {
     @POST("v1beta/models/gemini-2.5-flash:generateContent")
     suspend fun generateContent(
@@ -44,24 +41,20 @@ interface GoogleSearchApi {
     ): SearchResponse
 }
 
-// --- Singleton Réseau ---
 object NetworkModule {
     private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
     private val contentType = "application/json".toMediaType()
 
-    // 1. Crée l'intercepteur de logs
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY // Affiche tout : URL, Headers et Réponse
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    // 2. Ajoute-le au client OkHttp
     private val client = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor) // <--- C'est ici que ça se passe
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    // Client pour Gemini (Base URL Google AI)
     val geminiApi: GeminiApi = Retrofit.Builder()
         .baseUrl("https://generativelanguage.googleapis.com/")
         .client(client)
@@ -69,13 +62,10 @@ object NetworkModule {
         .build()
         .create(GeminiApi::class.java)
 
-    // Client pour Google Search
     val googleSearchApi: GoogleSearchApi = Retrofit.Builder()
         .baseUrl("https://www.googleapis.com/")
         .client(client)
         .addConverterFactory(json.asConverterFactory(contentType))
         .build()
         .create(GoogleSearchApi::class.java)
-
-    // (Ajouter Mistral ici plus tard avec la même logique si besoin)
 }

@@ -25,27 +25,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. Setup ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 2. Setup ViewModel (Injection manuelle cracra mais efficace pour débuter)
         val database = AppDatabase.getDatabase(this)
         val repository = CarRepository(database.carDao())
         val factory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
-        // 3. Listeners
         binding.btnSearch.setOnClickListener {
             val query = binding.etSearch.text.toString()
             viewModel.searchCar(query)
 
-            // Cacher le clavier
             val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
         }
 
-        // 4. Observer les changements d'état
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
@@ -71,19 +66,15 @@ class MainActivity : AppCompatActivity() {
 
                 val v = state.voiture
 
-                // Remplissage des champs
                 binding.tvModelName.text = "${v.marque} ${v.nom_modele}"
                 binding.tvPriceRange.text = "Prix : ${v.prix_min}€ - ${v.prix_max}€"
                 binding.tvProductionYears.text = "Production : ${v.annees_production.firstOrNull()} - ${v.annees_production.lastOrNull()}"
 
-                // Fiabilité
                 binding.tvReliabilityText.text = v.bilan.fiabilite_texte
 
-                // Listes moteurs (format simple pour l'instant)
                 binding.tvEnginesGood.text = v.bilan.moteurs_conseilles.joinToString("\n") { "- $it" }
                 binding.tvEnginesBad.text = v.bilan.moteurs_deconseilles.joinToString("\n") { "- $it" }
 
-                // Image avec Coil
                 binding.imgCar.load(v.photo_url) {
                     crossfade(true)
                     error(android.R.drawable.ic_menu_report_image) // Image par défaut si erreur
@@ -91,7 +82,6 @@ class MainActivity : AppCompatActivity() {
             }
             is UiState.Error -> {
                 binding.progressBar.visibility = View.GONE
-                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ERROR: ${state.message}")
                 Toast.makeText(this, "Erreur : ${state.message}", Toast.LENGTH_LONG).show()
             }
         }

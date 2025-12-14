@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
-// Structure pour le parsing JSON des IA et stockage
 @Serializable
 data class Moteur(
     val nom: String,
@@ -29,12 +28,11 @@ data class BilanFiabilite(
     val moteurs_osef: List<String> = emptyList()
 )
 
-// L'entité principale stockée dans Room
 @Entity(tableName = "voitures")
 @Serializable
 data class VoitureEntity(
     @PrimaryKey
-    val id_modele: String = "", // <--- AJOUTE = "" (valeur par défaut)
+    val id_modele: String = "",
 
     val marque: String,
     val nom_modele: String,
@@ -43,9 +41,8 @@ data class VoitureEntity(
     val prix_max: Int,
     val transmission: List<String>,
 
-    val photo_url: String? = null, // <--- AJOUTE = null (valeur par défaut)
+    val photo_url: String? = null,
 
-    // Le reste ne change pas, car Gemini est censé fournir ces infos
     val moteurs: MoteursCarburant,
     val bilan: BilanFiabilite,
 

@@ -13,7 +13,6 @@ class CarRepository(private val carDao: CarDao) {
 
     private val jsonParser = Json { ignoreUnknownKeys = true }
 
-    // Remplacer par tes vraies clés (idéalement dans local.properties/BuildConfig)
     private val GEMINI_KEY = "use/your/value"
     private val GOOGLE_KEY = "use/your/value"
     private val GOOGLE_CX = "use/your/value"
@@ -21,14 +20,12 @@ class CarRepository(private val carDao: CarDao) {
     suspend fun getVoitureInfo(marque: String, modele: String): Result<VoitureEntity> {
         val id = "${marque}_${modele}".lowercase().replace(" ", "_")
 
-        // 1. Vérifier le Cache local
         val cachedCar = carDao.getVoiture(id)
         if (cachedCar != null) {
             Log.d("REPO", "Trouvé en cache local !")
             return Result.success(cachedCar)
         }
 
-        // 2. Si pas en cache, appeler Gemini
         Log.d("REPO", "Pas de cache, appel Gemini...")
         try {
             val prompt = """
@@ -57,17 +54,11 @@ class CarRepository(private val carDao: CarDao) {
             val rawText = response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
                 ?: return Result.failure(Exception("Gemini n'a rien renvoyé"))
 
-            // Nettoyage du JSON (Gemini met souvent des ```json au début)
             val cleanJson = rawText.replace("```json", "").replace("```", "").trim()
             var voitureData = jsonParser.decodeFromString<VoitureEntity>(cleanJson)
 
-            // 3. TODO : Appel Mistral pour vérifier (double check) ici
-            // voitureData = verifyWithMistral(voitureData)
-
-            // 4. Récupérer l'image
             var photoUrl: String? = null
             try {
-                // AJOUTE CE LOG
                 Log.d("REPO", "Recherche image pour : $marque $modele voiture exterieur")
 
                 val searchRes = NetworkModule.googleSearchApi.searchImage(
@@ -76,14 +67,12 @@ class CarRepository(private val carDao: CarDao) {
 
                 photoUrl = searchRes.items?.firstOrNull()?.link
 
-                // AJOUTE CE LOG
                 Log.d("REPO", "URL Image trouvée : $photoUrl")
 
             } catch (e: Exception) {
                 Log.e("REPO", "Erreur API Image: ${e.message}")
             }
 
-            // 5. Finaliser l'objet et sauvegarder
             val finalVoiture = voitureData.copy(
                 id_modele = id,
                 photo_url = photoUrl

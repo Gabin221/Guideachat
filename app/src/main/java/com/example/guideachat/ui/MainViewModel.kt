@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: CarRepository) : ViewModel() {
 
-    // États de l'interface (Loading, Success, Error)
     private val _uiState = MutableStateFlow<UiState>(UiState.Empty)
     val uiState: StateFlow<UiState> = _uiState
 
@@ -21,7 +20,6 @@ class MainViewModel(private val repository: CarRepository) : ViewModel() {
         _uiState.value = UiState.Loading
 
         viewModelScope.launch {
-            // On sépare la marque du modèle basiquement (ex: "Peugeot 308")
             val parts = query.trim().split(" ", limit = 2)
             val marque = parts.getOrElse(0) { "" }
             val modele = parts.getOrElse(1) { "" }
@@ -37,7 +35,6 @@ class MainViewModel(private val repository: CarRepository) : ViewModel() {
     }
 }
 
-// Les différents états possibles de l'écran
 sealed class UiState {
     object Empty : UiState()
     object Loading : UiState()
@@ -45,7 +42,6 @@ sealed class UiState {
     data class Error(val message: String) : UiState()
 }
 
-// Factory pour créer le ViewModel avec le Repository
 class MainViewModelFactory(private val repository: CarRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {

@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-// 1. Le DAO (Data Access Object)
 @Dao
 interface CarDao {
     @Query("SELECT * FROM voitures WHERE id_modele = :id")
@@ -26,21 +25,19 @@ interface CarDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVoiture(voiture: VoitureEntity)
 
-    // Pour l'auto-complétion
     @Query("SELECT nom_modele FROM voitures WHERE nom_modele LIKE :query || '%' LIMIT 5")
     fun getSuggestions(query: String): Flow<List<String>>
 }
 
-// 2. Les Convertisseurs (JSON <-> String BDD)
+
 class Converters {
     private val json = Json { ignoreUnknownKeys = true }
 
-    // Dans la classe Converters
     @TypeConverter
-    fun fromListInt(list: List<Int?>): String = json.encodeToString(list) // Change List<Int> par List<Int?>
+    fun fromListInt(list: List<Int?>): String = json.encodeToString(list)
 
     @TypeConverter
-    fun toListInt(data: String): List<Int?> = json.decodeFromString(data) // Change List<Int> par List<Int?>
+    fun toListInt(data: String): List<Int?> = json.decodeFromString(data)
 
     @TypeConverter
     fun fromListString(list: List<String>): String = json.encodeToString(list)
@@ -58,7 +55,6 @@ class Converters {
     fun toBilan(data: String): BilanFiabilite = json.decodeFromString(data)
 }
 
-// 3. La Database
 @Database(entities = [VoitureEntity::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

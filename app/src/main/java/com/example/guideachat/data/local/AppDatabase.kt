@@ -27,6 +27,12 @@ interface CarDao {
 
     @Query("SELECT nom_modele FROM voitures WHERE nom_modele LIKE :query || '%' LIMIT 5")
     fun getSuggestions(query: String): Flow<List<String>>
+
+    @Query("DELETE FROM voitures WHERE id_modele = :id")
+    suspend fun deleteVoiture(id: String)
+
+    @Query("DELETE FROM voitures")
+    suspend fun clearAll()
 }
 
 

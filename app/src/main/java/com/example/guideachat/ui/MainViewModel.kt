@@ -1,5 +1,6 @@
 package com.example.guideachat.ui
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -31,6 +32,21 @@ class MainViewModel(private val repository: CarRepository) : ViewModel() {
             } else {
                 _uiState.value = UiState.Error(result.exceptionOrNull()?.message ?: "Erreur inconnue")
             }
+        }
+    }
+
+    // Ajoute ces fonctions
+    fun deleteCar(id: String) {
+        viewModelScope.launch {
+            repository.deleteCar(id) // Ajoute cette méthode dans le Repository aussi !
+            // Pas besoin de mettre à jour l'UI state ici, la modale sera fermée
+        }
+    }
+
+    fun clearCache() {
+        viewModelScope.launch {
+            repository.clearCache() // Idem, ajoute dans Repository
+            // Toast.makeText(this, "Cache vidé !", Toast.LENGTH_SHORT).show() // (Ou gère via UI Event)
         }
     }
 }

@@ -1,12 +1,15 @@
 package com.example.guideachat.data.repository
 
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.viewModelScope
 import com.example.guideachat.data.local.CarDao
 import com.example.guideachat.data.model.VoitureEntity
 import com.example.guideachat.data.remote.Content
 import com.example.guideachat.data.remote.GeminiRequest
 import com.example.guideachat.data.remote.NetworkModule
 import com.example.guideachat.data.remote.Part
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class CarRepository(private val carDao: CarDao) {
@@ -84,5 +87,13 @@ class CarRepository(private val carDao: CarDao) {
         } catch (e: Exception) {
             return Result.failure(e)
         }
+    }
+
+    suspend fun deleteCar(id: String) {
+        carDao.deleteVoiture(id)
+    }
+
+    suspend fun clearCache() {
+        carDao.clearAll()
     }
 }

@@ -32,19 +32,27 @@ class CarRepository(private val carDao: CarDao) {
         Log.d("REPO", "Pas de cache, appel Gemini...")
         try {
             val prompt = """
-                Agis comme un expert automobile. Génère un JSON strict pour la voiture : $marque $modele.
-                Respecte EXACTEMENT ce schéma JSON (pas de markdown, juste le json) :
+                Tu es un expert automobile. Donne-moi les infos sur la "$marque $modele" (version européenne).
+                
+                IMPORTANT : Pour chaque moteur, donne une estimation de la consommation mixte réaliste (basée sur les données type Spritmonitor).
+                
+                Réponds UNIQUEMENT avec ce JSON strict :
                 {
-                  "marque": "$marque", "nom_modele": "$modele",
-                  "annees_production": [debut, fin], "prix_min": 1000, "prix_max": 5000,
-                  "transmission": ["manuelle"],
-                  "moteurs": { 
-                     "essence": [{"nom": "...", "puissances": [100]}],
-                     "diesel": [], "electrique": [], "hybride": [], "flexfuel": [], "gpl": []
-                  },
+                  "marque": "$marque",
+                  "nom_modele": "$modele (Génération précise)",
+                  "annees_production": [2015, 2020], (Mets null si toujours en production)
+                  "prix_min": 8000,
+                  "prix_max": 15000,
+                  "transmission": ["Manuelle", "Automatique"],
                   "bilan": {
-                     "fiabilite_texte": "Résumé fiabilité...",
-                     "moteurs_conseilles": ["..."], "moteurs_deconseilles": ["..."], "moteurs_osef": ["..."]
+                    "fiabilite_texte": "Résumé fiabilité...",
+                    "moteurs_conseilles": [
+                       { "nom": "2.0 BlueHDi 150", "conso_mixte": "5.8 L/100km" },
+                       { "nom": "1.2 PureTech 130", "conso_mixte": "6.5 L/100km" }
+                    ],
+                    "moteurs_deconseilles": [
+                       { "nom": "1.6 THP 156", "conso_mixte": "7.8 L/100km" }
+                    ]
                   }
                 }
             """.trimIndent()

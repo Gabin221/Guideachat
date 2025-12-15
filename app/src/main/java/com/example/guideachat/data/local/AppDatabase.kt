@@ -13,6 +13,7 @@ import androidx.room.TypeConverters
 import com.example.guideachat.data.model.VoitureEntity
 import com.example.guideachat.data.model.MoteursCarburant
 import com.example.guideachat.data.model.BilanFiabilite
+import com.example.guideachat.data.model.MoteurInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -52,6 +53,7 @@ class Converters {
 
     @TypeConverter
     fun fromMoteurs(moteurs: MoteursCarburant): String = json.encodeToString(moteurs)
+
     @TypeConverter
     fun toMoteurs(data: String): MoteursCarburant = json.decodeFromString(data)
 
@@ -59,6 +61,16 @@ class Converters {
     fun fromBilan(bilan: BilanFiabilite): String = json.encodeToString(bilan)
     @TypeConverter
     fun toBilan(data: String): BilanFiabilite = json.decodeFromString(data)
+
+    @TypeConverter
+    fun fromMoteurInfoList(list: List<MoteurInfo>): String {
+        return json.encodeToString(list)
+    }
+
+    @TypeConverter
+    fun toMoteurInfoList(data: String): List<MoteurInfo> {
+        return json.decodeFromString(data)
+    }
 }
 
 @Database(entities = [VoitureEntity::class], version = 1)

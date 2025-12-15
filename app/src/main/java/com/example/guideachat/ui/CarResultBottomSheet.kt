@@ -33,8 +33,21 @@ class CarResultBottomSheet(
         binding.tvPrice.text = "Prix occasion : ${voiture.prix_min}€ - ${voiture.prix_max}€"
         binding.tvReliability.text = voiture.bilan.fiabilite_texte
 
-        binding.tvEnginesGood.text = voiture.bilan.moteurs_conseilles.joinToString("\n") { "- $it" }
-        binding.tvEnginesBad.text = voiture.bilan.moteurs_deconseilles.joinToString("\n") { "- $it" }
+        binding.tvEnginesGood.text = voiture.bilan.moteurs_conseilles.joinToString("\n") {
+            "✅ ${it.nom} (${it.conso_mixte})"
+        }
+
+        binding.tvEnginesBad.text = voiture.bilan.moteurs_deconseilles.joinToString("\n") {
+            "❌ ${it.nom} (${it.conso_mixte})"
+        }
+
+        val anneeDebut = voiture.annees_production.firstOrNull()
+        val anneeFin = voiture.annees_production.getOrNull(1) // Peut être null
+        val finTexte = anneeFin?.toString() ?: "Aujourd'hui" // Si null -> "Aujourd'hui"
+        binding.tvProductionYears.text = "Production : $anneeDebut - $finTexte"
+
+        binding.tvEnginesGood.text = voiture.bilan.moteurs_conseilles.joinToString("\n") { "- ${it.nom} (${it.conso_mixte})" }
+        binding.tvEnginesBad.text = voiture.bilan.moteurs_deconseilles.joinToString("\n") { "- ${it.nom} (${it.conso_mixte})" }
 
         binding.imgCarResult.load(voiture.photo_url) {
             crossfade(true)
